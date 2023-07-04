@@ -1,11 +1,16 @@
-import { app, shell, BrowserWindow } from 'electron'
+import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import { WebviewPayload } from '../preload/index'
+
+let mainWindow: BrowserWindow
+
+const ids: WebviewPayload[] = [{ email: 'dnstylish', pass: 'Khangancut' }]
 
 function createWindow(): void {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
     show: false,
@@ -49,7 +54,52 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  createWindow()
+  ipcMain.handle('app:mounted', async () => {
+    console.log('app:mounted')
+    // open default window
+  })
+
+  /**
+   * Assign data from webview to main window
+   */
+  ipcMain.on('app:assign', async (_, payload: WebviewPayload) => {
+    console.log('app:assign', payload)
+    const index = ids.findIndex(
+      (obj) => obj.email.includes(payload.email) || payload.email.includes(obj.email)
+    )
+    if (index !== -1) {
+      // Update existing object
+      ids[index] = payload
+    } else {
+      // Add new object to array
+      ids.push(payload)
+    }
+
+    mainWindow.webContents.send('after:app:assign', ids)
+  })
+
+  ipcMain.handle('app:open', async (_, url: string, payload?: WebviewPayload) => {
+    console.log('app:open', url, payload)
+    const view = new BrowserWindow({
+      width: 1200,
+      height: 870,
+      show: false,
+      autoHideMenuBar: true,
+      ...(process.platform === 'linux' ? { icon } : {}),
+      webPreferences: {
+        preload: join(__dirname, '../preload/index.js'),
+        sandbox: false
+      }
+    })
+
+    view.on('ready-to-show', () => {
+      console.log('mounted', url)
+      view.show()
+      view.webContents.openDevTools()
+    })
+
+    view.webContents.loadURL(url)
+  })
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
