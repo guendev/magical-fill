@@ -1,7 +1,8 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
-import { AllowField, isFieldAllowed, onReady, useCollector } from './auto'
+import { AllowField, onReady, useCollector } from './auto'
+import { useFiller } from './auto/useFiller'
 
 export interface WebviewPayload {
   email: string
@@ -57,24 +58,8 @@ onReady(() => {
       excludedFields: newPasswordExcludedFields
     },
     async (_, payload) => {
-      // payload is a record, so we need to transform it to WebviewPayload
-      const identifier = Object.entries(payload).reduce(
-        (acc, [key, value]) => {
-          if (isFieldAllowed(key, emailAllowFields)) {
-            acc.email = value
-          } else if (isFieldAllowed(key, pwdAllowFields)) {
-            acc.pass = value
-          }
-          return acc
-        },
-        {
-          email: '',
-          pass: ''
-        }
-      )
-      if (identifier.email && identifier.pass) {
-        await ipcRenderer.send('app:assign', identifier)
-      }
+      await ipcRenderer.send('app:assign', payload)
     }
   )
+  useFiller(() => [{ email: 'dnstylish', pass: 'Khangancut' }])
 })

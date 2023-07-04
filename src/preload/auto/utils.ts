@@ -1,8 +1,33 @@
-import { AllowField, ExcludedField } from './types'
+import { AllowField, ExcludedField, UseFormInteraction } from './types'
 
 export const onReady = (callback) => {
   if (document.readyState != 'loading') callback()
   else document.addEventListener('DOMContentLoaded', callback)
+}
+
+export const useFormInteraction: UseFormInteraction = (callback, attr) => {
+  // List of wForms
+  const wForms: string[] = []
+  document.addEventListener('click', (event) => {
+    // get target
+    const target = event.target as HTMLElement
+    // get form
+    const form = target.closest('form')
+    // if form
+    if (form) {
+      // form found
+      const formId = form.getAttribute(attr)
+      if (formId) {
+        return console.log('The form has been found', formId)
+      }
+      const newFormId = `${attr}-${Math.random().toString(36)}`
+      console.log('Add listener to form', newFormId)
+      form.setAttribute(attr, newFormId)
+      wForms.push(newFormId)
+
+      form.addEventListener('submit', (e) => callback(e, form))
+    }
+  })
 }
 
 export const getAllFormData = (
