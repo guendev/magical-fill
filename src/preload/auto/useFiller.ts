@@ -17,7 +17,11 @@ export const fillToForm = (form: HTMLFormElement, resources: FieldData[]) => {
   })
 }
 
+/**
+ * @description Fill form data automatically
+ */
 export const useFiller: UseFiller = async (getData) => {
+  // get data from backend
   const resources = await getData()
 
   // fill forms when the current page is loaded
