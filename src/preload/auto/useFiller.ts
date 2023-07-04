@@ -8,7 +8,7 @@ export const fillToForm = (form: HTMLFormElement, resources: FieldData[]) => {
     }
     const value = matched[0][name]
 
-    // only support input in this time
+    // TODO: support filling select, textarea, etc.
     if (field.getAttribute('value')) {
       return console.log('Skip filled field', name)
     }

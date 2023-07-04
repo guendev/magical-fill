@@ -31,6 +31,7 @@ export const useFormInteraction: UseFormInteraction = (callback, attr) => {
   })
 }
 
+// TODO: support filling select, textarea, etc.
 export const getAllFormData = (
   form: HTMLFormElement,
   allowFields: AllowField[] = [],
