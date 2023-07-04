@@ -16,7 +16,4 @@ export type UseCollector = (
 
 export type UseFiller = (getPayload: () => FieldData[] | Promise<FieldData[]>) => void
 
-export type UseFormInteraction = (
-  callback: (e: SubmitEvent, form: HTMLFormElement) => void,
-  attr: string
-) => void
+export type UseFormInteraction = (callback: (form: HTMLFormElement) => void, attr: string) => void

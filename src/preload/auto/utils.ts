@@ -5,9 +5,11 @@ export const onReady = (callback) => {
   else document.addEventListener('DOMContentLoaded', callback)
 }
 
+export const getFormId = (attr: string) => {
+  return `${attr}-${Math.random().toString(36)}`
+}
+
 export const useFormInteraction: UseFormInteraction = (callback, attr) => {
-  // List of wForms
-  const wForms: string[] = []
   document.addEventListener('click', (event) => {
     // get target
     const target = event.target as HTMLElement
@@ -18,14 +20,13 @@ export const useFormInteraction: UseFormInteraction = (callback, attr) => {
       // form found
       const formId = form.getAttribute(attr)
       if (formId) {
-        return console.log('The form has been found', formId)
+        console.log('The form has been found', formId)
+      } else {
+        const newFormId = getFormId(attr)
+        console.log('Add listener to form', newFormId)
+        form.setAttribute(attr, newFormId)
       }
-      const newFormId = `${attr}-${Math.random().toString(36)}`
-      console.log('Add listener to form', newFormId)
-      form.setAttribute(attr, newFormId)
-      wForms.push(newFormId)
-
-      form.addEventListener('submit', (e) => callback(e, form))
+      callback(form)
     }
   })
 }
