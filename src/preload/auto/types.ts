@@ -14,6 +14,13 @@ export type UseCollector = (
   callback: (e: SubmitEvent, payload: FieldData) => void
 ) => void
 
-export type UseFiller = (getPayload: () => FieldData[] | Promise<FieldData[]>) => void
+export type UseFiller = (getPayload: () => FieldData[] | Promise<FieldData[]>, fn?: FillFn) => void
 
 export type UseFormInteraction = (callback: (form: HTMLFormElement) => void, attr: string) => void
+
+export type FillFn = (
+  form: HTMLFormElement,
+  input: HTMLInputElement,
+  name: string,
+  resources: FieldData[]
+) => void

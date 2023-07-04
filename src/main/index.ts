@@ -77,16 +77,8 @@ app.whenReady().then(() => {
    */
   ipcMain.on('app:assign', async (_, payload: WebviewPayload) => {
     console.log('app:assign', payload)
-    const index = ids.findIndex(
-      (obj) => obj.email.includes(payload.email) || payload.email.includes(obj.email)
-    )
-    if (index !== -1) {
-      // Update existing object
-      ids[index] = payload
-    } else {
-      // Add new object to array
-      ids.push(payload)
-    }
+    // do something with payload
+    ids.push(payload)
 
     mainWindow.webContents.send('after:app:assign', ids)
   })

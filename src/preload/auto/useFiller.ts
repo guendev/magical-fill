@@ -1,31 +1,38 @@
-import { FieldData, UseFiller } from './types'
-export const fillToForm = (form: HTMLFormElement, resources: FieldData[]) => {
+import { FieldData, FillFn, UseFiller } from './types'
+
+// TODO: Fix this
+export const fillToForm = (form: HTMLFormElement, resources: FieldData[], fn?: FillFn) => {
   form.querySelectorAll(`input`).forEach((field) => {
     const name = field.getAttribute('name')!
     const matched = resources.filter((f) => f[name])
     if (!matched.length) {
       return console.log('Not found field', name)
     }
-    const value = matched[0][name]
 
-    // TODO: support filling select, textarea, etc.
     if (field.getAttribute('value')) {
       return console.log('Skip filled field', name)
     }
-    field.setAttribute('value', value)
-    console.log('Fill field', name, value)
+
+    if (fn) {
+      fn(form, field, name, matched)
+    } else {
+      const value = matched[0][name]
+      // TODO: support filling select, textarea, etc.
+      field.setAttribute('value', value)
+      console.log('Fill field', name, value)
+    }
   })
 }
 
 /**
  * @description Fill form data automatically
  */
-export const useFiller: UseFiller = async (getData) => {
+export const useFiller: UseFiller = async (getData, fn) => {
   // get data from backend
   const resources = await getData()
 
   // fill forms when the current page is loaded
-  document.querySelectorAll('form').forEach((form) => fillToForm(form, resources))
+  document.querySelectorAll('form').forEach((form) => fillToForm(form, resources, fn))
 
   // use MutationObserver to detect insert a new form to ducment
   const observer = new MutationObserver((mutationsList) => {
@@ -35,7 +42,7 @@ export const useFiller: UseFiller = async (getData) => {
         const addedForm = Array.from(mutation.addedNodes).find((node) => node.nodeName === 'FORM')
         if (addedForm) {
           // fill the new form
-          fillToForm(addedForm as HTMLFormElement, resources)
+          fillToForm(addedForm as HTMLFormElement, resources, fn)
         }
       }
     }

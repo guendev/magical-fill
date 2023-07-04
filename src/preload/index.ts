@@ -61,22 +61,27 @@ onReady(() => {
       await ipcRenderer.send('app:assign', payload)
     }
   )
-  useFiller(() => [
-    {
-      email: 'dnstylish',
-      pass: 'Khangancut'
-    },
-    {
-      email: 'guendev',
-      pass: 'Khangancut'
-    },
-    {
-      email: 'khangancut',
-      pass: 'Khangancut'
-    },
-    {
-      address: 'Vietnam',
-      city: 'Hanoi'
+  useFiller(
+    () => [
+      {
+        email: 'dnstylish',
+        pass: 'Khangancut'
+      },
+      {
+        email: 'guendev',
+        pass: 'Khangancut'
+      },
+      {
+        email: 'khangancut',
+        pass: 'Khangancut'
+      },
+      {
+        address: 'Vietnam',
+        city: 'Hanoi'
+      }
+    ],
+    (input, name, resources) => {
+      console.log(input, name, resources)
     }
-  ])
+  )
 })
