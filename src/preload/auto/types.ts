@@ -2,7 +2,7 @@ export type AllowField = string | RegExp
 
 export type ExcludedField = AllowField
 
-export type FieldData = Record<string, string>
+export type FieldData = Record<string, any>
 
 export type UseCollectorOption = {
   allowFields?: AllowField[]
