@@ -6,7 +6,20 @@ import { WebviewPayload } from '../preload/index'
 
 let mainWindow: BrowserWindow
 
-const ids: WebviewPayload[] = [{ email: 'dnstylish', pass: 'Khangancut' }]
+const ids: WebviewPayload[] = [
+  {
+    email: 'dnstylish',
+    pass: 'Khangancut'
+  },
+  {
+    email: 'guendev',
+    pass: 'Khangancut'
+  },
+  {
+    email: 'khangancut',
+    pass: 'Khangancut'
+  }
+]
 
 function createWindow(): void {
   // Create the browser window.
