@@ -7,9 +7,9 @@ import {
   isFieldExcluded,
   onReady,
   useCollector,
-  useFormInteraction
+  useFormInteraction,
+  useFiller
 } from './auto'
-import { useFiller } from './auto/useFiller'
 
 export interface WebviewPayload {
   email: string
