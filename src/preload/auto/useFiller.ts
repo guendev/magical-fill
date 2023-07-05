@@ -1,7 +1,6 @@
-import { FieldData, UseFiller } from './types'
+import { FieldData, FillFn, UseFiller } from './types'
 
-// TODO: Fix this
-export const fillToForm = (form: HTMLFormElement, resources: FieldData[]) => {
+export const fillHandle: FillFn = (form: HTMLFormElement, resources: FieldData[]) => {
   form.querySelectorAll(`input`).forEach((field) => {
     const name = field.getAttribute('name')!
     const matched = resources.filter((f) => f[name])
@@ -22,12 +21,14 @@ export const fillToForm = (form: HTMLFormElement, resources: FieldData[]) => {
 /**
  * @description Fill form data automatically
  */
-export const useFiller: UseFiller = async (getData) => {
+export const useFiller: UseFiller = async (getData, fn?: FillFn) => {
   // get data from backend
   const resources = await getData()
 
   // fill forms when the current page is loaded
-  document.querySelectorAll('form').forEach((form) => fillToForm(form, resources))
+  document
+    .querySelectorAll('form')
+    .forEach((form) => (fn ? fn(form, resources) : fillHandle(form, resources)))
 
   // use MutationObserver to detect insert a new form to ducment
   const observer = new MutationObserver((mutationsList) => {
@@ -37,7 +38,9 @@ export const useFiller: UseFiller = async (getData) => {
         const addedForm = Array.from(mutation.addedNodes).find((node) => node.nodeName === 'FORM')
         if (addedForm) {
           // fill the new form
-          fillToForm(addedForm as HTMLFormElement, resources)
+          fn
+            ? fn(addedForm as HTMLFormElement, resources)
+            : fillHandle(addedForm as HTMLFormElement, resources)
         }
       }
     }
