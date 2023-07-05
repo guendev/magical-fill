@@ -1,7 +1,7 @@
-import { FieldData, FillFn, UseFiller } from './types'
+import { FieldData, UseFiller } from './types'
 
 // TODO: Fix this
-export const fillToForm = (form: HTMLFormElement, resources: FieldData[], fn?: FillFn) => {
+export const fillToForm = (form: HTMLFormElement, resources: FieldData[]) => {
   form.querySelectorAll(`input`).forEach((field) => {
     const name = field.getAttribute('name')!
     const matched = resources.filter((f) => f[name])
@@ -12,27 +12,22 @@ export const fillToForm = (form: HTMLFormElement, resources: FieldData[], fn?: F
     if (field.getAttribute('value')) {
       return console.log('Skip filled field', name)
     }
-
-    if (fn) {
-      fn(form, field, name, matched)
-    } else {
-      const value = matched[0][name]
-      // TODO: support filling select, textarea, etc.
-      field.setAttribute('value', value)
-      console.log('Fill field', name, value)
-    }
+    const value = matched[0][name]
+    // TODO: support filling select, textarea, etc.
+    field.setAttribute('value', value)
+    console.log('Fill field', name, value)
   })
 }
 
 /**
  * @description Fill form data automatically
  */
-export const useFiller: UseFiller = async (getData, fn) => {
+export const useFiller: UseFiller = async (getData) => {
   // get data from backend
   const resources = await getData()
 
   // fill forms when the current page is loaded
-  document.querySelectorAll('form').forEach((form) => fillToForm(form, resources, fn))
+  document.querySelectorAll('form').forEach((form) => fillToForm(form, resources))
 
   // use MutationObserver to detect insert a new form to ducment
   const observer = new MutationObserver((mutationsList) => {
@@ -42,7 +37,7 @@ export const useFiller: UseFiller = async (getData, fn) => {
         const addedForm = Array.from(mutation.addedNodes).find((node) => node.nodeName === 'FORM')
         if (addedForm) {
           // fill the new form
-          fillToForm(addedForm as HTMLFormElement, resources, fn)
+          fillToForm(addedForm as HTMLFormElement, resources)
         }
       }
     }
